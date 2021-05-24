@@ -1,0 +1,97 @@
+---
+title: "Datos hidrologicos ejercicio explorativo"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Importación de datos  
+Primeramente se debe añadir el directorio para luego importar los datos con los que se va a trabajar utilizando inp, dim se utiliza para observar la dimensión, 
+
+```{r}
+inp <- read.csv("FDC.csv")
+
+head(inp)
+dim(inp)
+
+inp[!complete.cases(inp),]
+```
+
+## Grafico 1: Tiempo de caudal
+
+Se visualizan las series del volumen del caudal del río estrella y del río banano
+```{r}
+plot(inp[,2], type = "l", col="green",
+     
+main = "Tiempo de caudal",
+xlab = ("Río Estrella"),
+ylab = ("Río Banano")
+)
+ 
+lines(inp[,3],col="blue")
+```  
+
+## Infografias
+Se visualizan las características descriptivas de cada uno de los ríos, la frecuencia y el rango absoluto. 
+# Infografia de Río Estrella
+
+```{r}
+summary(inp[,2:3])
+hist(inp[,2],
+     main = "Histograma Río Estrella",
+     xlab = ("Rango absoluto"),
+     ylab = ("Frecuencia"),
+     col="yellow"
+)
+```  
+
+# Infografia de Río Banano
+
+
+```{r}
+hist(inp[,3],
+     main = "Histrograma Río Banano",
+     xlab = ("Rango absoluto"),
+     ylab = ("Frecuencia"),
+     col="brown"
+     )
+```   
+
+## Grafico 2 Valores anuales de los caudales
+
+```{r}
+names(inp) <- c("fecha", "Estrella","Banano")
+attach(inp)
+
+Tempdate <- strptime(inp[,1], format= "%d/%m/%Y")
+
+MAQ_Estrella <- tapply(Estrella, format(Tempdate, format = "%Y"), FUN = sum) 
+MAQ_Banano <- tapply(Banano, format(Tempdate, format = "%Y"), FUN = sum)
+write.csv(rbind(MAQ_Estrella, MAQ_Banano),file= "MAQ.csv")
+
+plot(MAQ_Banano,ylim = c(100,3000),
+     main = "Valores anuales de los caudales",
+     xlab = ("Meses"),
+     ylab = ("Años"),
+     col="purple"
+     )
+lines(MAQ_Estrella, col = 2)
+
+MMQ_Estrella <- tapply(Estrella, format(Tempdate, format = "%m"), FUN = sum)   
+MMQ_Banano <- tapply(Banano, format(Tempdate, format = "%m"), FUN = sum) 
+```                                
+
+## Grafico 3 Coeficiente de correlación.
+Se realiza un analisis del coeficiente de correlación.
+
+
+```{r}
+plot(inp[,2], inp[,3],
+     main = "Coeficiente de correlación",
+     xlab = ("Estrella"),
+     ylab = ("Banano"),
+     col="blue"
+     )
+```   
